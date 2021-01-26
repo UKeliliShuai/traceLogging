@@ -139,6 +139,10 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
     private SensorManager mSensorManager = null;
     private Sensor Sensor_Acc = null;
     private float[] Acc_data = null;
+    //通勤属性
+    private int isTransfer = 0;//不是换乘点0;是换乘点1
+    private String commuteMode = "0";
+    private String vehicleMode = "0";
     //    private float[] gravity = null;
     //GPS全限权限部分————onResume
     private static final int MY_PERMISSION_ACCESS_COARSE_LOCATION = 11;
@@ -182,6 +186,7 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
          */
         initLocation();
         initWifi();
+//        setOptionsButtonInVisible();
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         Sensor_Acc = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -225,15 +230,15 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
 
         traceBtn = (Button) findViewById(R.id.btn_trace);
         gatherBtn = (Button) findViewById(R.id.btn_gather);
-        getHttp = (Button) findViewById(R.id.getHttp);
-        postHttp = (Button) findViewById(R.id.postHttp);
+//        getHttp = (Button) findViewById(R.id.getHttp);
+//        postHttp = (Button) findViewById(R.id.postHttp);
 
         traceBtn.setOnClickListener(this);
         gatherBtn.setOnClickListener(this);
-        getHttp.setOnClickListener(this);
-        postHttp.setOnClickListener(this);
+//        getHttp.setOnClickListener(this);
+//        postHttp.setOnClickListener(this);
         setTraceBtnStyle();
-        setGatherBtnStyle();
+//        setGatherBtnStyle();
 
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         /**
@@ -244,61 +249,77 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
 
     }
 
-
+    /**
+     * TODO onClick按钮
+     * @param view
+     */
     @Override
     public void onClick(View view) {
         Log.e("res1", "有按钮点击");
         Log.i("res2", String.valueOf(view.getId()));
         switch (view.getId()) {
-            // 追踪选项设置
-            case R.id.btn_activity_options:
-                ViewUtil.startActivityForResult(this, TracingOptionsActivity.class, Constants
-                        .REQUEST_CODE);
-                break;
-
             case R.id.btn_trace:
+                /**
+                 * 开启服务
+                 */
                 if (trackApp.isTraceStarted) {
                     trackApp.mClient.stopTrace(trackApp.mTrace, traceListener);
                     stopRealTimeLoc();
                 } else {
-                    trackApp.mClient.startTrace(trackApp.mTrace, traceListener);
-                    if (Constants.DEFAULT_PACK_INTERVAL != packInterval) {
-                        stopRealTimeLoc();
-                        startRealTimeLoc(packInterval);
-                    }
+                    // 先设置日志
+                    ViewUtil.startActivityForResult(this, TracingOptionsActivity.class, Constants
+                            .REQUEST_CODE);
+                    /**
+                     * 再开启采集，更加凸显默认选择上一次的ratiobtn
+                     * 查看onActivityResult回调函数
+                     */
                 }
                 break;
-
+            /**
+             * 简单日志
+             * 回调函数 onActivityResult
+             */
             case R.id.btn_gather:
-                Log.i("res", "btn_gather被点击");
                 if (trackApp.isGatherStarted) {
-                    trackApp.mClient.stopGather(traceListener);
+                    ViewUtil.startActivityForResult(this, TracingOptionsActivity.class, Constants
+                            .REQUEST_CODE);
                 } else {
-                    trackApp.mClient.startGather(traceListener);
+                    viewUtil.showToast(TracingActivity.this,
+                            "请先开启采集");
+                }
+                break;
+            /**
+             * 详细日志
+             */
+            case R.id.btn_activity_options:
+                if (trackApp.isGatherStarted) {
+                    ViewUtil.startActivityForResult(this, TracingLogsActivity.class, Constants
+                            .REQUEST_CODE);
+                } else {
+                    viewUtil.showToast(TracingActivity.this,
+                            "请先开启采集");
                 }
                 break;
             /**
              * 执行get请求 Android OKHttp使用详解https://www.jianshu.com/p/2663ce3da0db
              */
-            case R.id.getHttp:
-                Log.i("res", "get按钮被点击");
-                String url = "http://www.baidu.com/";
-                GetExample getExample = new GetExample();
-                getExample.getDatasync(url);//同步
-                getExample.getDatasync(url);//异步
-                break;
-
-            case R.id.postHttp:
-                /**
-                 * 执行post请求
-                 */
-                Log.i("res", "post按钮被点击");
-                PostExample postExample = new PostExample();
-                postExample.postDataWithParame();
-                Log.i("res", "post按钮结束");
-                break;
-            default:
-                break;
+//            case R.id.getHttp:
+//                String url = "http://www.baidu.com/";
+//                GetExample getExample = new GetExample();
+//                getExample.getDatasync(url);//同步
+//                getExample.getDatasync(url);//异步
+//                break;
+//            /**
+//             * post请求
+//             */
+//            case R.id.postHttp:
+//                Log.i("res", "post按钮被点击");
+//                PostExample postExample = new PostExample();
+//                postExample.postDataWithParame();
+//                Log.i("res", "post按钮结束");
+//                break;
+//            default:
+//                break;
         }
 
     }
@@ -306,6 +327,7 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
 
     /**
      * 设置服务按钮样式
+     * 当采集成功后回调两个接口 onStartTraceCallback（）和 onStopTraceCallback（）
      */
     private void setTraceBtnStyle() {
         boolean isTraceStarted = trackApp.trackConf.getBoolean("is_trace_started", false);
@@ -336,52 +358,36 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
     /**
      * 设置采集按钮样式
      */
-    private void setGatherBtnStyle() {
-        boolean isGatherStarted = trackApp.trackConf.getBoolean("is_gather_started", false);
-        if (isGatherStarted) {
-            gatherBtn.setText(R.string.stop_gather);
-            gatherBtn.setTextColor(ResourcesCompat.getColor(getResources(), R.color.white, null));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                gatherBtn.setBackground(ResourcesCompat.getDrawable(getResources(),
-                        R.mipmap.bg_btn_sure, null));
-            } else {
-                gatherBtn.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
-                        R.mipmap.bg_btn_sure, null));
-            }
-        } else {
-            gatherBtn.setText(R.string.start_gather);
-            gatherBtn.setTextColor(ResourcesCompat.getColor(getResources(), R.color.layout_title, null));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                gatherBtn.setBackground(ResourcesCompat.getDrawable(getResources(),
-                        R.mipmap.bg_btn_cancel, null));
-            } else {
-                gatherBtn.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
-                        R.mipmap.bg_btn_cancel, null));
-            }
-        }
-    }
+//    private void setGatherBtnStyle() {
+//        boolean isGatherStarted = trackApp.trackConf.getBoolean("is_gather_started", false);
+//        if (isGatherStarted) {
+//            gatherBtn.setText(R.string.stop_gather);
+//            gatherBtn.setTextColor(ResourcesCompat.getColor(getResources(), R.color.white, null));
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                gatherBtn.setBackground(ResourcesCompat.getDrawable(getResources(),
+//                        R.mipmap.bg_btn_sure, null));
+//            } else {
+//                gatherBtn.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
+//                        R.mipmap.bg_btn_sure, null));
+//            }
+//        } else {
+//            gatherBtn.setText(R.string.start_gather);
+//            gatherBtn.setTextColor(ResourcesCompat.getColor(getResources(), R.color.layout_title, null));
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+//                gatherBtn.setBackground(ResourcesCompat.getDrawable(getResources(),
+//                        R.mipmap.bg_btn_cancel, null));
+//            } else {
+//                gatherBtn.setBackgroundDrawable(ResourcesCompat.getDrawable(getResources(),
+//                        R.mipmap.bg_btn_cancel, null));
+//            }
+//        }
+//    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-//
-//        final float alpha = (float) 0.8;
-//        if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
-//            gravity = event.values.clone();
-//        }
+
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             Acc_data = event.values.clone();
-//            // Isolate the force of gravity with the low-pass filter.
-//            gravity[0] = alpha * gravity[0] + (1 - alpha) * Acc_data[0];
-//            gravity[1] = alpha * gravity[1] + (1 - alpha) * Acc_data[1];
-//            gravity[2] = alpha * gravity[2] + (1 - alpha) * Acc_data[2];
-
-            // Remove the gravity contribution with the high-pass filter.
-//            linear_acceleration[0] = Acc_data[0] ;
-//            linear_acceleration[1] = Acc_data[1] ;
-//            linear_acceleration[2] = Acc_data[2] ;
-//            linear_acceleration[0] = Acc_data[0] - gravity[0];
-//            linear_acceleration[1] = Acc_data[1] - gravity[1];
-//            linear_acceleration[2] = Acc_data[2] - gravity[2];
         }
     }
 
@@ -392,7 +398,9 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
 
     /**
      * 实时定位任务
-     *
+     * 该任务是一个子线程，interval * 1000时间post一次
+     * getCurrentLocation函数会与APP类的trackConf相关
+     * 最终使用UI现程中的handler开启子线程
      * @author baidu
      */
     class RealTimeLocRunnable implements Runnable {
@@ -426,29 +434,41 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
         }
         trackApp.mClient.stopRealTimeLoc();
     }
-
+    // TODO 日志界面回调数据
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (null == data) {
             return;
         }
+        /**
+         * 简单日志
+         */
+        if (data.hasExtra("vehicleMode")) {
+            vehicleMode = String.valueOf(data.getIntExtra("vehicleMode",-1));
+        }
+        if (data.hasExtra("commuteMode")) {
+            commuteMode = String.valueOf(data.getIntExtra("commuteMode",-1));
+        }
+        /**
+         * 详细日志
+         */
 
-        if (data.hasExtra("locationMode")) {
-            LocationMode locationMode = LocationMode.valueOf(data.getStringExtra("locationMode"));
-            trackApp.mClient.setLocationMode(locationMode);
+        //开启采集
+        if (!trackApp.isTraceStarted) {
+            trackApp.mClient.startTrace(trackApp.mTrace, traceListener);
+            if (Constants.DEFAULT_PACK_INTERVAL != packInterval) {
+                stopRealTimeLoc();
+                startRealTimeLoc(packInterval);
+            }
         }
 
-        if (data.hasExtra("isNeedObjectStorage")) {
-            boolean isNeedObjectStorage = data.getBooleanExtra("isNeedObjectStorage", false);
-            trackApp.mTrace.setNeedObjectStorage(isNeedObjectStorage);
-        }
 
-        if (data.hasExtra("gatherInterval") || data.hasExtra("packInterval")) {
-            int gatherInterval = data.getIntExtra("gatherInterval", Constants.DEFAULT_GATHER_INTERVAL);
-            int packInterval = data.getIntExtra("packInterval", Constants.DEFAULT_PACK_INTERVAL);
-            TracingActivity.this.packInterval = packInterval;
-            trackApp.mClient.setInterval(gatherInterval, packInterval);
-        }
+//        if (data.hasExtra("gatherInterval") || data.hasExtra("packInterval")) {
+//            int gatherInterval = data.getIntExtra("gatherInterval", Constants.DEFAULT_GATHER_INTERVAL);
+//            int packInterval = data.getIntExtra("packInterval", Constants.DEFAULT_PACK_INTERVAL);
+//            TracingActivity.this.packInterval = packInterval;
+//            trackApp.mClient.setInterval(gatherInterval, packInterval);
+//        }
 
         //        if (data.hasExtra("supplementMode")) {
         //            mSupplementMode = SupplementMode.valueOf(data.getStringExtra("supplementMode"));
@@ -597,7 +617,9 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
             }
 
         };
-
+        /**
+         * 轨迹采集监听器
+         */
         traceListener = new OnTraceListener() {
 
             /**
@@ -616,6 +638,9 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
 
             /**
              * 开启服务回调接口
+             * TODO SharedPreferences使用案例
+             * 用以存储上一次选择的RadioBtnID
+             * 注意搜索trackConf、以及APP类中的trackConf
              * @param errorNo 状态码
              * @param message 消息
              *                <p>
@@ -637,6 +662,17 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
                     editor.apply();
                     setTraceBtnStyle();
                     registerReceiver();
+                    /**
+                     * 开启采集
+                     * TODO 等待服务开启成功后再开始采集
+                     * 而且这样还是可以触发【开启采集】【结束采集】回调接口，只是不会显示Toast
+                     * 验证方式是在回调成功的函数中加断点
+                     */
+                    if (trackApp.isGatherStarted) {
+                        trackApp.mClient.stopGather(traceListener);
+                    } else {
+                        trackApp.mClient.startGather(traceListener);
+                    }
                 }
                 viewUtil.showToast(TracingActivity.this,
                         String.format("onStartTraceCallback, errorNo:%d, message:%s ", errorNo, message));
@@ -664,7 +700,7 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
                     editor.remove("is_gather_started");
                     editor.apply();
                     setTraceBtnStyle();
-                    setGatherBtnStyle();
+//                    setGatherBtnStyle();
                     unregisterPowerReceiver();
                 }
                 viewUtil.showToast(TracingActivity.this,
@@ -673,6 +709,7 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
 
             /**
              * 开启采集回调接口
+             * ukelili：当开启服务与开启采集同时进行，该接口不会回调
              * @param errorNo 状态码
              * @param message 消息
              *                <p>
@@ -688,7 +725,7 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
                     SharedPreferences.Editor editor = trackApp.trackConf.edit();
                     editor.putBoolean("is_gather_started", true);
                     editor.apply();
-                    setGatherBtnStyle();
+//                    setGatherBtnStyle();
                 }
                 viewUtil.showToast(TracingActivity.this,
                         String.format("onStartGatherCallback, errorNo:%d, message:%s ", errorNo, message));
@@ -711,7 +748,7 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
                     SharedPreferences.Editor editor = trackApp.trackConf.edit();
                     editor.remove("is_gather_started");
                     editor.apply();
-                    setGatherBtnStyle();
+//                    setGatherBtnStyle();
                 }
                 viewUtil.showToast(TracingActivity.this,
                         String.format("onStopGatherCallback, errorNo:%d, message:%s ", errorNo, message));
@@ -766,7 +803,9 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
                         String.format("onInitBOSCallback, errorNo:%d, message:%s ", errorNo, message));
             }
         };
-
+        /**
+         * TODO 轨迹属性回调函数
+         */
         mCustomAttributeListener = new OnCustomAttributeListener() {
             //        onResume方法需要注册传感器
             @Override
@@ -775,21 +814,22 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
                  * 需要上传的数据
                  * （1）加速度计
                  * （2）卫星数量
-                 * （3）wifi连接
+                 * （3）wifi连接标签+SSID
+                 * （4）交通方式：0步行，1自行车，2电动车，3公交车，4汽车，5地铁，6其他
+                 * （5）活动目的：0就餐，1上班，2上学，3家，4娱乐，5购物，6其他（默认为上一次选择）
                  */
                 Map<String, String> trackAttrs = new HashMap<String, String>();
-//                trackAttrs.put("strAcceX", "1");
-//                trackAttrs.put("strAcceY", "2");
-//                trackAttrs.put("strAcceZ", "3");
-//                trackAttrs.put("satCount", "4");
-//                trackAttrs.put("wifiTag", "5");
-//                trackAttrs.put("SSID", "6");
                 trackAttrs.put("strAcceX", String.valueOf(Acc_data[0]));
                 trackAttrs.put("strAcceY", String.valueOf(Acc_data[1]));
                 trackAttrs.put("strAcceZ", String.valueOf(Acc_data[2]));
                 trackAttrs.put("satCount", String.valueOf(SatellitesCount));
                 trackAttrs.put("wifiTag", String.valueOf(WifiTag));
                 trackAttrs.put("SSID", SSID);
+//                trackAttrs.put("isTransfer",String.valueOf(isTransfer));
+                trackAttrs.put("vehicleMode", vehicleMode);
+                trackAttrs.put("commuteMode", commuteMode);
+                Log.i("mode", "vehicleMode: "+vehicleMode);
+                Log.i("mode", "commuteMode: "+commuteMode);
                 return trackAttrs;
             }
 
@@ -800,6 +840,9 @@ public class TracingActivity extends BaseActivity implements View.OnClickListene
         };
     }
 
+    /**
+     * 实时Handler，不更新UI，用于开启子线程
+     */
     static class RealTimeHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {

@@ -1,6 +1,7 @@
 package com.baidu.track.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.annotation.TargetApi;

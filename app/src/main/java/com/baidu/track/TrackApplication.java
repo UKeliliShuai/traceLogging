@@ -74,6 +74,7 @@ public class TrackApplication extends Application {
     public long serviceId = 225305;
 
     /**
+     * todo 轨迹采集的实体名称，需要查看下文的CommonUtil.getEntityName()
      * Entity标识
      */
     public String entityName = null;
@@ -229,6 +230,8 @@ public class TrackApplication extends Application {
             SharedPreferences.Editor editor = trackConf.edit();
             editor.remove("is_trace_started");
             editor.remove("is_gather_started");
+            editor.remove("vehicleModeID");
+            editor.remove("commuteModeID");
             editor.apply();
         }
     }

@@ -24,8 +24,9 @@
     <!-- Activity标题名称-->
     <string name="base_title">BaseActivity</string>
     <string name="login_title">LoginActivity</string>
-    <string name="tracing_title">轨迹追踪</string>
-    <string name="tracing_options_title">追踪设置</string>
+    <string name="tracing_title">轨迹采集</string>
+    <string name="tracing_options_title">采集日志</string>
+    <string name="tracing_options_title2">采集详细日志</string>
     <string name="track_query_title">轨迹查询</string>
     <string name="track_query_options_title">查询设置</string>
     <string name="fence_title">地理围栏</string>
@@ -43,18 +44,30 @@
     <string name="faq_desc">状态码及问题反馈渠道说明</string>
 
     <!-- TracingOptionActivity 主选项名称 -->
-    <string name="tracing_option_interval">采集、打包频率(单位:秒):</string>
-    <string name="tracing_option_location_mode">定位模式:</string>
-    <string name="tracing_option_object_save">对象存储:</string>
+<!--    <string name="tracing_option_interval">采集、打包频率(单位:秒):</string>-->
+    <string name="tracing_option_vehicle_modee">交通方式:</string>
+    <string name="tracing_option_commute_mode">活动目的:</string>
 
     <!-- 定位模式子选项名称 -->
-    <string name="high_accuracy">高精度定位模式，GPS与网络综合定位</string>
-    <string name="battery_saving">低功耗定位模式，仅使用网络定位</string>
-    <string name="device_sensors">仅使用设备(GPS)定位</string>
+    <string name="vehicle0">步行</string>
+    <string name="vehicle1">自行车</string>
+    <string name="vehicle2">电动车</string>
+    <string name="vehicle3">公交车</string>
+    <string name="vehicle4">汽车</string>
+    <string name="vehicle5">地铁</string>
+    <string name="vehicle6">停留/其他</string>
+    <!-- 定位模式子选项名称 -->
+    <string name="commute0">就餐</string>
+    <string name="commute1">上班</string>
+    <string name="commute2">上学</string>
+    <string name="commute3">家</string>
+    <string name="commute4">娱乐</string>
+    <string name="commute5">购物</string>
+    <string name="commute6">其他</string>
 
-    <!-- BOS存储开关子选项 -->
-    <string name="close_bos">关闭</string>
-    <string name="open_bos">开启</string>
+<!--    &lt;!&ndash; BOS存储开关子选项 &ndash;&gt;-->
+<!--    <string name="close_bos">关闭</string>-->
+<!--    <string name="open_bos">开启</string>-->
 
     <!-- 采集打包子选项 -->
     <string name="gather_interval">采集频率:</string>
@@ -114,10 +127,13 @@
     <string name="fence_create_polygon">创建多边形围栏</string>
 
     <!-- 追踪控制子选项 -->
-    <string name="start_trace">开启服务</string>
-    <string name="stop_trace">停止服务</string>
-    <string name="start_gather">开启采集</string>
-    <string name="stop_gather">停止采集</string>
+<!--    <string name="start_trace">开启服务</string>-->
+<!--    <string name="stop_trace">停止服务</string>-->
+<!--    <string name="start_gather">开启采集</string>-->
+<!--    <string name="stop_gather">停止采集</string>-->
+    <string name="start_trace">开启采集</string>
+    <string name="stop_trace">停止采集</string>
+    <string name="start_gather">上传日志</string>
 <!--    自增测试按钮-->
     <string name="get_Http">发送get请求</string>
     <string name="post_Http">发送post请求</string>

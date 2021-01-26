@@ -65,38 +65,38 @@
                 android:textColor="@color/layout_title"
                 android:onClick="onTraceControl"/>
     </LinearLayout>
-    <LinearLayout
-        android:id="@+id/layout_http_bottom"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="95dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
-<!--        需要查看布局文件：相对布局和线性布局-->
-<!--        主要调整layout_marginLeft这几个标签-->
-<!--        需要修改点击后调用的函数-->
-        <Button
-            android:id="@+id/getHttp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginLeft="55dp"
-            android:layout_marginRight="10dp"
-            android:text="@string/get_Http"
-            android:background="@mipmap/bg_btn_cancel"
-            android:textColor="@color/layout_title" />
-        <Button
-            android:id="@+id/postHttp"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="55dp"
-            android:text="@string/post_Http"
-            android:background="@mipmap/bg_btn_cancel"
-            android:textColor="@color/layout_title" />
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:id="@+id/layout_http_bottom"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginBottom="95dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:weightSum="1">-->
+<!--&lt;!&ndash;        需要查看布局文件：相对布局和线性布局&ndash;&gt;-->
+<!--&lt;!&ndash;        主要调整layout_marginLeft这几个标签&ndash;&gt;-->
+<!--&lt;!&ndash;        需要修改点击后调用的函数&ndash;&gt;-->
+<!--        <Button-->
+<!--            android:id="@+id/getHttp"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:layout_marginLeft="55dp"-->
+<!--            android:layout_marginRight="10dp"-->
+<!--            android:text="@string/get_Http"-->
+<!--            android:background="@mipmap/bg_btn_cancel"-->
+<!--            android:textColor="@color/layout_title" />-->
+<!--        <Button-->
+<!--            android:id="@+id/postHttp"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="0.5"-->
+<!--            android:layout_marginLeft="10dp"-->
+<!--            android:layout_marginRight="55dp"-->
+<!--            android:text="@string/post_Http"-->
+<!--            android:background="@mipmap/bg_btn_cancel"-->
+<!--            android:textColor="@color/layout_title" />-->
+<!--    </LinearLayout>-->
 
 
 </RelativeLayout>

@@ -78,6 +78,11 @@
         <activity android:name=".activity.FAQActivity"
                   android:screenOrientation="portrait"/>
         <activity
+            android:name=".activity.TracingLogsActivity"
+            android:theme="@style/AppBaseTheme"
+            android:screenOrientation="portrait"/>
+
+        <activity
                 android:name=".activity.TracingOptionsActivity"
                 android:theme="@style/AppBaseTheme"
                 android:screenOrientation="portrait"/>

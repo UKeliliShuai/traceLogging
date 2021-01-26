@@ -15,6 +15,7 @@ public abstract class BaseActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ViewUtil.initSystemBar(this, R.color.system_bar_bg);
+//        该方法是Activity方法，设置class对应的XML文件
         setContentView(getContentViewId());
     }
 
@@ -46,6 +47,18 @@ public abstract class BaseActivity extends Activity {
     }
 
     /**
+     * todo 寻找了两层
+     *     <LinearLayout
+     *             android:id="@+id/layout_top" //id看这里
+     *             android:layout_width="match_parent"
+     *             android:layout_height="wrap_content"
+     *             android:orientation="vertical">
+     *
+     *         <include layout="@layout/activity_top"></include>
+     *
+     *     </LinearLayout>
+     * baseActivity这里findViewById是寻找全局的按钮id，也就是说layout_top这个
+     *
      * 不显示设置按钮
      */
     public void setOptionsButtonInVisible() {
@@ -55,7 +68,7 @@ public abstract class BaseActivity extends Activity {
     }
 
     /**
-     * 回退事件
+     * 回退事件 也就是回退图标
      *
      * @param v
      */

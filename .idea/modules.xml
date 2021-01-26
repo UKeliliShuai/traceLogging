@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaiduTrace_AndroidSDK_v3_1_7_Sample.iml" filepath="$PROJECT_DIR$/.idea/modules/BaiduTrace_AndroidSDK_v3_1_7_Sample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/BaiduTrace_AndroidSDK_v3_1_7_Sample.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/BaiduTrace_AndroidSDK_v3_1_7_Sample.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/traceLogging.iml" filepath="$PROJECT_DIR$/.idea/modules/traceLogging.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/traceLogging.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/traceLogging.app.iml" />
     </modules>
   </component>
 </project>

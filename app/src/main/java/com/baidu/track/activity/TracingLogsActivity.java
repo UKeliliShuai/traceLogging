@@ -10,11 +10,10 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
 
-import com.baidu.trace.model.SortType;
 import com.baidu.trace.api.track.SupplementMode;
 import com.baidu.trace.model.CoordType;
+import com.baidu.trace.model.SortType;
 import com.baidu.trace.model.TransportMode;
 import com.baidu.track.R;
 import com.baidu.track.TrackApplication;
@@ -24,7 +23,7 @@ import com.baidu.track.utils.Constants;
 
 import java.text.SimpleDateFormat;
 
-public class TrackQueryOptionsActivity extends BaseActivity
+public class TracingLogsActivity extends BaseActivity
         implements CompoundButton.OnCheckedChangeListener {
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
@@ -51,7 +50,7 @@ public class TrackQueryOptionsActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.track_query_options_title);
+        setTitle(R.string.tracing_options_title2);
         setOptionsButtonInVisible();
         init();
         trackApp = (TrackApplication) getApplication();
@@ -93,7 +92,7 @@ public class TrackQueryOptionsActivity extends BaseActivity
             startTimeCallback = new DateDialog.Callback() {
                 @Override
                 public void onDateCallback(long timeStamp) {
-                    TrackQueryOptionsActivity.this.startTime = timeStamp;
+                    TracingLogsActivity.this.startTime = timeStamp;
                     StringBuilder startTimeBuilder = new StringBuilder();
                     startTimeBuilder.append(getResources().getString(R.string.start_time));
                     startTimeBuilder.append(simpleDateFormat.format(timeStamp * 1000));
@@ -114,7 +113,7 @@ public class TrackQueryOptionsActivity extends BaseActivity
             endTimeCallback = new DateDialog.Callback() {
                 @Override
                 public void onDateCallback(long timeStamp) {
-                    TrackQueryOptionsActivity.this.endTime = timeStamp;
+                    TracingLogsActivity.this.endTime = timeStamp;
                     StringBuilder endTimeBuilder = new StringBuilder();
                     endTimeBuilder.append(getResources().getString(R.string.end_time));
                     endTimeBuilder.append(simpleDateFormat.format(timeStamp * 1000));
@@ -271,9 +270,13 @@ public class TrackQueryOptionsActivity extends BaseActivity
 
     }
 
+    /**
+     * 设置
+     * @return
+     */
     @Override
     protected int getContentViewId() {
-        return R.layout.activity_trackquery_options;
+        return R.layout.activity_tracing_logs;
     }
 
 }
